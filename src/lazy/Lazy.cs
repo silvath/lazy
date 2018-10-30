@@ -31,17 +31,18 @@ namespace lazy
         {
             if (!this.Solution.HasChanges)
                 return (true);
-            MessageBox.ErrorQuery(50, 7, "Changes", "There is repositoies with changes", "Ok");
+            MessageBox.ErrorQuery(50, 7, "Changes", "There is repositories with changes", "Ok");
             return (false);
         }
 
-        public void CheckoutGit()
+        public void CheckoutBranchGit()
         {
             if (this.Solution == null)
                 return;
             GitService.UpdateStatus(this.Solution, true);
             if (!EnsureHasNoChanges())
                 return;
+            string branch = this.ShowDialogText("Choose the branch", "Branch:");
 
         }
 
@@ -72,6 +73,11 @@ namespace lazy
             if (this.Solution == null)
                 return;
             GitService.UpdateStatus(this.Solution, true);
+            if (!this.Solution.HasChangesPush)
+            {
+                MessageBox.ErrorQuery(50, 7, "Commit", "There is no repositories to push", "Ok");
+                return;
+            }
             GitService.Push(this.Solution);
             GitService.UpdateStatus(this.Solution, true);
             this.RefreshUI();
@@ -82,7 +88,28 @@ namespace lazy
             if (this.Solution == null)
                 return;
             GitService.UpdateStatus(this.Solution, true);
+            if (!this.Solution.HasChangesNotStaged)
+            {
+                MessageBox.ErrorQuery(50, 7, "Add", "There is no files to add", "Ok");
+                return;
+            }
             GitService.Add(this.Solution);
+            GitService.UpdateStatus(this.Solution, true);
+            this.RefreshUI();
+        }
+
+        public void CommitGit()
+        {
+            if (this.Solution == null)
+                return;
+            GitService.UpdateStatus(this.Solution, true);
+            if (!this.Solution.HasChangesNotCommited)
+            {
+                MessageBox.ErrorQuery(50, 7, "Commit", "There is no repositories to commit", "Ok");
+                return;
+            }
+            string message = ShowDialogText("Commit", "Message");
+            GitService.Commit(this.Solution, message);
             GitService.UpdateStatus(this.Solution, true);
             this.RefreshUI();
         }
@@ -191,6 +218,20 @@ namespace lazy
             }
             builder.Append(" )");
             return (builder.ToString());
+        }
+
+        TextField _textField = null;
+        private string ShowDialogText(string title, string text)
+        {
+            string response = "";
+            var dialog = new Dialog(title, 50, 10, new Button("Ok") { Clicked = () => { response = _textField.Text.ToString(); Application.RequestStop(); } },new Button("Cancel") { Clicked = () => { Application.RequestStop(); } });
+            Label label = new Label(1, 1, text);
+            dialog.Add(label);
+            _textField = new TextField(1, 1, 40, "");
+            dialog.Add(_textField);
+            _textField.EnsureFocus();
+            Application.Run(dialog);
+            return (response);
         }
     }
 }

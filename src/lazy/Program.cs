@@ -28,13 +28,16 @@ namespace lazy
             var menu = new MenuBar(new MenuBarItem[] {
                 new MenuBarItem ("_Git", new MenuItem [] {
                     new MenuItem ("_Status", "", () => { _lazy.RefreshGitStatus(); }),
-                    new MenuItem ("_Checkout", "", () => { _lazy.CheckoutGit(); }),
                     new MenuItem ("_Fetch", "", () => { _lazy.FetchGit(); }),
+                    new MenuItem ("_Checkout Branch", "", () => { _lazy.CheckoutBranchGit(); }),
                     new MenuItem ("_Pull", "", () => { _lazy.PullGit(); }),
                     new MenuItem ("_Add", "", () => { _lazy.AddGit(); }),
+                    new MenuItem ("_Commit", "", () => { _lazy.CommitGit(); }),
                     new MenuItem ("_Push", "", () => { _lazy.PushGit(); }),
                 }),
-
+                new MenuBarItem ("_VSTS", new MenuItem [] {
+                    new MenuItem ("_No donuts for you", "", () => { if (Quit ()) top.Running = false; })
+                }),
                 new MenuBarItem ("_File", new MenuItem [] {
                     new MenuItem ("_Quit", "", () => { if (Quit ()) top.Running = false; })
                 })

@@ -97,5 +97,18 @@ namespace lazy.Service
             if(repository.HasChangesNotStaged)
                 ConsoleService.Execute("git", "add .", repository.Path);
         }
+
+        public static void Commit(SolutionVO solution, string message, bool onlySelected = true)
+        {
+            foreach (RepositoryVO repository in solution.Repositories)
+                if ((!onlySelected) || (repository.Selected))
+                    Commit(repository, message);
+        }
+
+        public static void Commit(RepositoryVO repository, string message)
+        {
+            if (repository.HasChangesNotCommited)
+                ConsoleService.Execute("git", string.Format(@"commit -m ""{0}""", message), repository.Path);
+        }
     }
 }

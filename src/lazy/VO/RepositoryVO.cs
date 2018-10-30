@@ -16,11 +16,18 @@ namespace lazy.VO
         {
             get
             {
-                return (HasChangesNotCommited || HasChangesNotCommited);
+                return (HasChangesNotStaged || HasChangesNotCommited);
             }
         }
         public bool HasChangesNotStaged { set; get; }
         public bool HasChangesNotCommited { set; get; }
+        public bool HasChangesPush
+        {
+            get
+            {
+                return ((this.Head.HasValue) && (this.Head.Value > 0));
+            }
+        }
         public RepositoryVO()
         {
             this.Projects = new List<ProjectVO>();

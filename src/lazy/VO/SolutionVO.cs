@@ -35,6 +35,36 @@ namespace lazy.VO
                 return (false);
             }
         }
+        public bool HasChangesNotStaged
+        {
+            get
+            {
+                foreach (RepositoryVO repository in this.Repositories)
+                    if ((repository.Selected) && (repository.HasChangesNotStaged))
+                        return (true);
+                return (false);
+            }
+        }
+        public bool HasChangesNotCommited
+        {
+            get
+            {
+                foreach (RepositoryVO repository in this.Repositories)
+                    if ((repository.Selected) && (repository.HasChangesNotCommited))
+                        return (true);
+                return (false);
+            }
+        }
+        public bool HasChangesPush
+        {
+            get
+            {
+                foreach (RepositoryVO repository in this.Repositories)
+                    if ((repository.Selected) && (repository.HasChangesPush))
+                        return (true);
+                return (false);
+            }
+        }
         public SolutionVO()
         {
             this.Projects = new List<ProjectVO>();
