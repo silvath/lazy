@@ -94,7 +94,7 @@ namespace lazy.Service
 
         public static void Add(RepositoryVO repository)
         {
-            if(repository.HasChangesNotStaged)
+            if (repository.HasChangesNotStaged)
                 ProcessService.Execute("git", "add .", repository.Path);
         }
 
@@ -120,6 +120,8 @@ namespace lazy.Service
 
         public static void CheckoutBranch(RepositoryVO repository, string branch)
         {
+            if (repository.Branch == branch)
+                return;
             List<string> branchs = ListBranchs(repository);
             if (branchs.Contains(branch))
                 ProcessService.Execute("git", string.Format(@"checkout {0}", branch), repository.Path);
@@ -129,10 +131,18 @@ namespace lazy.Service
         {
             List<string> branchs = new List<string>();
             string response = ProcessService.Execute("git", "branch --list", repository.Path);
-            string[] lines = response.Split(System.Environment.NewLine);
-            foreach (string line in lines)
+            string[] lines = response.Split("\n");
+            for (int i = 0; i < lines.Length; i++)
             {
-
+                string line = lines[i];
+                if (line.StartsWith("*"))
+                    line = line.Substring(1);
+                line = line.Trim();
+                if (line.EndsWith("\r"))
+                    line = line.Substring(0, line.Length - ("\r".Length));
+                if (string.IsNullOrEmpty(line))
+                    continue;
+                branchs.Add(line);
             }
             return (branchs);
         }

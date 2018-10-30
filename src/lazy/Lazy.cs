@@ -43,6 +43,8 @@ namespace lazy
             if (!EnsureHasNoChanges())
                 return;
             string branch = this.ShowDialogText("Choose the branch", "Branch:");
+            if (string.IsNullOrEmpty(branch))
+                return;
             GitService.CheckoutBranch(this.Solution, branch);
             GitService.UpdateStatus(this.Solution, true);
             this.RefreshUI();
@@ -111,6 +113,8 @@ namespace lazy
                 return;
             }
             string message = ShowDialogText("Commit", "Message");
+            if (string.IsNullOrEmpty(message))
+                return;
             GitService.Commit(this.Solution, message);
             GitService.UpdateStatus(this.Solution, true);
             this.RefreshUI();
