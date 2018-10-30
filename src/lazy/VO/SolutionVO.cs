@@ -10,6 +10,31 @@ namespace lazy.VO
         public string Path { set; get; }
         public List<ProjectVO> Projects { set; get; }
         public List<RepositoryVO> Repositories { set; get; }
+        public bool Selected
+        {
+            set
+            {
+                foreach (RepositoryVO repository in this.Repositories)
+                    repository.Selected = value;
+            }
+            get
+            {
+                foreach (RepositoryVO repository in this.Repositories)
+                    if (!repository.Selected)
+                        return (false);
+                return (true);
+            }
+        }
+        public bool HasChanges
+        {
+            get
+            {
+                foreach (RepositoryVO repository in this.Repositories)
+                    if ((repository.Selected) && (repository.HasChanges))
+                        return (true);
+                return (false);
+            }
+        }
         public SolutionVO()
         {
             this.Projects = new List<ProjectVO>();

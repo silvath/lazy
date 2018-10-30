@@ -44,7 +44,7 @@ namespace lazy.Service
                 project.Repository = repository;
                 repository.Projects.Add(project);
             }
-            GitService.Update(solution);
+            GitService.UpdateStatus(solution);
             return (solution);
         }
     }
