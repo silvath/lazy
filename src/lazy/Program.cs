@@ -24,17 +24,19 @@ namespace lazy
             // Creates the top-level window to show
             var win = new Window(new Rect(0, 1, top.Frame.Width, top.Frame.Height - 1), "lazy");
             top.Add(win);
-            // Creates a menubar, the item "New" has a help menu.
+            // MenuBar.
             var menu = new MenuBar(new MenuBarItem[] {
-                new MenuBarItem ("_File", new MenuItem [] {
-                    new MenuItem ("_Quit", "", () => { if (Quit ()) top.Running = false; })
-                }),
                 new MenuBarItem ("_Git", new MenuItem [] {
                     new MenuItem ("_Status", "", () => { _lazy.RefreshGitStatus(); }),
                     new MenuItem ("_Checkout", "", () => { _lazy.CheckoutGit(); }),
+                    new MenuItem ("_Fetch", "", () => { _lazy.FetchGit(); }),
                     new MenuItem ("_Pull", "", () => { _lazy.PullGit(); }),
                     new MenuItem ("_Add", "", () => { _lazy.AddGit(); }),
-                    new MenuItem ("_Push", "", null)
+                    new MenuItem ("_Push", "", () => { _lazy.PushGit(); }),
+                }),
+
+                new MenuBarItem ("_File", new MenuItem [] {
+                    new MenuItem ("_Quit", "", () => { if (Quit ()) top.Running = false; })
                 })
             });
             top.Add(menu);
@@ -42,8 +44,15 @@ namespace lazy
             _lazy = new Lazy(win);
             if (!string.IsNullOrEmpty(Solution))
                 _lazy.Solution = LoaderService.Load(Solution);
-            this._lazy.RefreshUI();
-            Application.Run();
+            if (_lazy.Solution == null)
+            {
+                Console.WriteLine($"Can`t find {Solution}");
+            }
+            else
+            {
+                this._lazy.RefreshUI();
+                Application.Run();
+            }
             return 0;
         }
 

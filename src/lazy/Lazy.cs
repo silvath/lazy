@@ -45,6 +45,16 @@ namespace lazy
 
         }
 
+        public void FetchGit()
+        {
+            if (this.Solution == null)
+                return;
+            GitService.UpdateStatus(this.Solution, true);
+            GitService.Fetch(this.Solution);
+            GitService.UpdateStatus(this.Solution, true);
+            this.RefreshUI();
+        }
+
         public void PullGit()
         {
             if (this.Solution == null)
@@ -53,6 +63,16 @@ namespace lazy
             if (!EnsureHasNoChanges())
                 return;
             GitService.Pull(this.Solution);
+            GitService.UpdateStatus(this.Solution, true);
+            this.RefreshUI();
+        }
+
+        public void PushGit()
+        {
+            if (this.Solution == null)
+                return;
+            GitService.UpdateStatus(this.Solution, true);
+            GitService.Push(this.Solution);
             GitService.UpdateStatus(this.Solution, true);
             this.RefreshUI();
         }
@@ -79,6 +99,7 @@ namespace lazy
             foreach (RepositoryVO repository in this.Solution.Repositories)
             {
                 views.Add(CreateCheckbox(x + 4, y++, repository));
+                views.Add(CreateLabel(x + 8, y++, GetProjectsName(repository)));
                 views.Add(CreateLabel(x + 8, y++, GetBranchInfo(repository)));
                 InsertRepositoryInfo(views, repository, x + 8, y++);
             }
@@ -123,6 +144,8 @@ namespace lazy
             if (repository.HasChangesNotCommited)
                 views.Add(CreateLabel(x, y, " ", COLOR_NOT_COMMITTED));
             x = x + 2;
+            if (repository.Head.HasValue)
+                views.Add(CreateLabel(x, y, repository.Head.Value.ToString("+0;-#")));
         }
 
         private void Checkbox_Solution_Toggled(object sender, EventArgs e)
@@ -152,9 +175,9 @@ namespace lazy
             return (builder.ToString());
         }
 
-        private string GetRepositoryName(RepositoryVO repository)
+        private string GetProjectsName(RepositoryVO repository)
         {
-            return (string.Format("{0} {1}", repository.Name, GetProjectNames(repository.Projects)));
+            return (string.Format("Projects {0}", GetProjectNames(repository.Projects)));
         }
 
         private string GetProjectNames(List<ProjectVO> projects)

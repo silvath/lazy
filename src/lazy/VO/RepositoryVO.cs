@@ -11,6 +11,7 @@ namespace lazy.VO
         public string Branch { set; get; }
         public List<ProjectVO> Projects { set; get; }
         public bool Selected { set; get; }
+        public int? Head { set; get; }
         public bool HasChanges
         {
             get

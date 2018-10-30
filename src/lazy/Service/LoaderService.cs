@@ -12,12 +12,13 @@ namespace lazy.Service
         private const string ER_SOLUTION_PROJECT = @"Project\(\""\{(\w|\d|\-)+\}""\) = \""(?<name>(\w)+)\""\, \""(?<path>(\w|\.|\\)+)""";
         public static SolutionVO Load(string pathOrName)
         {
-            if (!File.Exists(pathOrName))
+            string path = GetPath(pathOrName);
+            if (path == null)
                 return (null);
             SolutionVO solution = new SolutionVO();
-            solution.Name = Path.GetFileNameWithoutExtension(pathOrName);
-            solution.Path = pathOrName;
-            string solutionText = File.ReadAllText(pathOrName);
+            solution.Name = Path.GetFileNameWithoutExtension(path);
+            solution.Path = path;
+            string solutionText = File.ReadAllText(path);
             foreach (Match match in Regex.Matches(solutionText, ER_SOLUTION_PROJECT))
             {
                 //Project
@@ -46,6 +47,24 @@ namespace lazy.Service
             }
             GitService.UpdateStatus(solution);
             return (solution);
+        }
+
+        private static string GetPath(string pathOrName)
+        {
+            if (File.Exists(pathOrName))
+                return (pathOrName);
+            string directory = Directory.GetCurrentDirectory();
+            string pathCombine = Path.Combine(directory, pathOrName);
+            if (File.Exists(pathCombine))
+                return (pathCombine);
+            foreach (string file in Directory.GetFiles(directory))
+            {
+                if (!file.EndsWith(".sln"))
+                    continue;
+                if (file.ToLower().Contains(pathOrName.ToLower()))
+                    return (file);
+            }
+            return (null);
         }
     }
 }
