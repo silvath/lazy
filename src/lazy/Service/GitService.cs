@@ -32,7 +32,7 @@ namespace lazy.Service
 
         public static void UpdateStatus(RepositoryVO repository)
         {
-            string response = ConsoleService.Execute("git", "status", repository.Path);
+            string response = ProcessService.Execute("git", "status", repository.Path);
             Match match = Regex.Match(response, ER_BRANCH);
             repository.Branch = match.Groups["name"].Value;
             repository.HasChangesNotStaged = Regex.IsMatch(response, ER_HASCHANGES_NOT_STAGED);
@@ -57,7 +57,7 @@ namespace lazy.Service
 
         public static void Fetch(RepositoryVO repository)
         {
-            ConsoleService.Execute("git", "fetch", repository.Path);
+            ProcessService.Execute("git", "fetch", repository.Path);
         }
 
         public static void Pull(SolutionVO solution, bool onlySelected = true)
@@ -69,7 +69,7 @@ namespace lazy.Service
 
         public static void Pull(RepositoryVO repository)
         {
-            ConsoleService.Execute("git", "pull", repository.Path);
+            ProcessService.Execute("git", "pull", repository.Path);
         }
 
         public static void Push(SolutionVO solution, bool onlySelected = true)
@@ -83,7 +83,7 @@ namespace lazy.Service
         {
             if ((!repository.Head.HasValue) || (repository.Head.Value < 0))
                 return;
-            ConsoleService.Execute("git", "push", repository.Path);
+            ProcessService.Execute("git", "push", repository.Path);
         }
         public static void Add(SolutionVO solution, bool onlySelected = true)
         {
@@ -95,7 +95,7 @@ namespace lazy.Service
         public static void Add(RepositoryVO repository)
         {
             if(repository.HasChangesNotStaged)
-                ConsoleService.Execute("git", "add .", repository.Path);
+                ProcessService.Execute("git", "add .", repository.Path);
         }
 
         public static void Commit(SolutionVO solution, string message, bool onlySelected = true)
@@ -108,7 +108,33 @@ namespace lazy.Service
         public static void Commit(RepositoryVO repository, string message)
         {
             if (repository.HasChangesNotCommited)
-                ConsoleService.Execute("git", string.Format(@"commit -m ""{0}""", message), repository.Path);
+                ProcessService.Execute("git", string.Format(@"commit -m ""{0}""", message), repository.Path);
+        }
+
+        public static void CheckoutBranch(SolutionVO solution, string branch, bool onlySelected = true)
+        {
+            foreach (RepositoryVO repository in solution.Repositories)
+                if ((!onlySelected) || (repository.Selected))
+                    CheckoutBranch(repository, branch);
+        }
+
+        public static void CheckoutBranch(RepositoryVO repository, string branch)
+        {
+            List<string> branchs = ListBranchs(repository);
+            if (branchs.Contains(branch))
+                ProcessService.Execute("git", string.Format(@"checkout {0}", branch), repository.Path);
+        }
+
+        public static List<string> ListBranchs(RepositoryVO repository)
+        {
+            List<string> branchs = new List<string>();
+            string response = ProcessService.Execute("git", "branch --list", repository.Path);
+            string[] lines = response.Split(System.Environment.NewLine);
+            foreach (string line in lines)
+            {
+
+            }
+            return (branchs);
         }
     }
 }

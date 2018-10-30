@@ -5,7 +5,7 @@ using System.Text;
 
 namespace lazy.Service
 {
-    public class ConsoleService
+    public class ProcessService
     {
         public static string Execute(string command, string arguments = null, string workingDirectory = null)
         {

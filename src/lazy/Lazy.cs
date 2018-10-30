@@ -43,7 +43,9 @@ namespace lazy
             if (!EnsureHasNoChanges())
                 return;
             string branch = this.ShowDialogText("Choose the branch", "Branch:");
-
+            GitService.CheckoutBranch(this.Solution, branch);
+            GitService.UpdateStatus(this.Solution, true);
+            this.RefreshUI();
         }
 
         public void FetchGit()
