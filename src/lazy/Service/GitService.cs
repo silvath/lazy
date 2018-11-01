@@ -9,7 +9,7 @@ namespace lazy.Service
 {
     public class GitService
     {
-        private const string ER_BRANCH = @"On branch (?<name>(\w+))";
+        private const string ER_BRANCH = @"On branch (?<name>(\w|\-)+)";
         private const string ER_HASCHANGES_NOT_STAGED = "Changes not staged for commit";
         private const string ER_HASCHANGES_NOT_COMMITED = "Changes to be committed";
         private const string ER_HASCHANGES_UNTRACKED_FILES = "Untracked files:";
@@ -130,7 +130,7 @@ namespace lazy.Service
         public static List<string> ListBranchs(RepositoryVO repository)
         {
             List<string> branchs = new List<string>();
-            string response = ProcessService.Execute("git", "branch --list", repository.Path);
+            string response = ProcessService.Execute("git", "branch -a", repository.Path);
             string[] lines = response.Split("\n");
             for (int i = 0; i < lines.Length; i++)
             {
@@ -138,9 +138,15 @@ namespace lazy.Service
                 if (line.StartsWith("*"))
                     line = line.Substring(1);
                 line = line.Trim();
+                if (line.StartsWith("remotes/origin/"))
+                    line = line.Substring("remotes/origin/".Length);
                 if (line.EndsWith("\r"))
                     line = line.Substring(0, line.Length - ("\r".Length));
+                if (line.Contains("->"))
+                    continue;
                 if (string.IsNullOrEmpty(line))
+                    continue;
+                if (branchs.Contains(line))
                     continue;
                 branchs.Add(line);
             }
