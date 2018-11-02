@@ -47,7 +47,12 @@ namespace lazy
             _lazy = new Lazy(win);
             if (!string.IsNullOrEmpty(Solution))
                 _lazy.Solution = LoaderService.Load(Solution);
-            if (_lazy.Solution == null)
+            if (string.IsNullOrEmpty(Solution))
+            {
+                Console.WriteLine("You must inform the solution name/path.");
+                Console.WriteLine("lazy -s name");
+            }
+            else if (_lazy.Solution == null)
             {
                 Console.WriteLine($"Can`t find {Solution}");
             }
