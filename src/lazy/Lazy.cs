@@ -136,6 +136,29 @@ namespace lazy
             this.RefreshUI();
         }
 
+        public void ShowFilesNotStaged(string repositoryName)
+        {
+            RepositoryVO repository = this.Solution.GetRepositoryByName(repositoryName);
+            Dictionary<string,string> files = GitService.ListFilesNotStaged(repository);
+            bool updated = WindowManager.ShowDialogFilesNotStaged("Files Not Staged", files);
+            if (!updated)
+                return;
+            GitService.UpdateStatus(this.Solution);
+            this.RefreshUI();
+        }
+
+        public void ShowFilesNotCommited(string repositoryName)
+        {
+            RepositoryVO repository = this.Solution.GetRepositoryByName(repositoryName);
+            Dictionary<string, string> files = GitService.ListFilesNotCommited(repository);
+            bool updated = WindowManager.ShowDialogFilesNotStaged("Files Not Commited", files);
+            if (!updated)
+                return;
+            GitService.UpdateStatus(this.Solution);
+            this.RefreshUI();
+        }
+
+
         public void RefreshUI()
         {
             Clear(_windowStatus);

@@ -152,5 +152,74 @@ namespace lazy.Service
             }
             return (branchs);
         }
+
+        public static Dictionary<string, string> ListFilesNotStaged(RepositoryVO repository)
+        {
+            return (ListFiles(repository, ER_HASCHANGES_NOT_STAGED));
+        }
+
+        public static Dictionary<string, string> ListFilesNotCommited(RepositoryVO repository)
+        {
+            return (ListFiles(repository, ER_HASCHANGES_NOT_COMMITED));
+        }
+
+        private static Dictionary<string, string> ListFiles(RepositoryVO repository, string type)
+        {
+            Dictionary<string, string> files = new Dictionary<string, string>();
+            Dictionary<string, List<string>> filesTypes = ListFiles(repository);
+            if (!filesTypes.ContainsKey(type))
+                return (files);
+            List<string> filesType = filesTypes[type];
+            for (int i = 0; i < filesType.Count; i++)
+            {
+                string fileType = filesType[i];
+                string[] parts = fileType.Split(":");
+                files.Add(fileType, parts.Length > 1 ? parts[1].Trim() : fileType);
+            }
+            return (files);
+        }
+
+        private static Dictionary<string, List<string>> ListFiles(RepositoryVO repository)
+        {
+            Dictionary<string, List<string>> files = new Dictionary<string, List<string>>();
+            string response = ProcessService.Execute("git", "status", repository.Path);
+            string[] lines = response.Split("\n");
+            string lastSector = null;
+            List<string> buffer = new List<string>();
+            for (int i = 0; i < lines.Length; i++)
+            {
+                string line = lines[i];
+                line = line.Trim();
+                if (string.IsNullOrEmpty(line))
+                    continue;
+                if (line.Contains("(") && line.Contains(")"))
+                    continue;
+                string sector = GetLineSector(line);
+                if (sector != null)
+                {
+                    if ((lastSector != null) && (buffer.Count > 0))
+                        files.Add(lastSector, buffer);
+                    buffer = new List<string>();
+                    lastSector = sector;
+                    continue;
+                }
+                if (lastSector != null)
+                    buffer.Add(line);
+            }
+            if ((lastSector != null) && (buffer.Count > 0))
+                files.Add(lastSector, buffer);
+            return (files);
+        }
+
+        private static string GetLineSector(string line)
+        {
+            if (line.Contains(ER_HASCHANGES_NOT_STAGED))
+                return (ER_HASCHANGES_NOT_STAGED);
+            if (line.Contains(ER_HASCHANGES_UNTRACKED_FILES))
+                return (ER_HASCHANGES_NOT_STAGED);
+            if (line.Contains(ER_HASCHANGES_NOT_COMMITED))
+                return (ER_HASCHANGES_NOT_COMMITED);
+            return (null);
+        }
     }
 }

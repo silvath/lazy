@@ -25,6 +25,16 @@ namespace lazy.Views
                 this._lazy.ShowBranchs(this.Text.ToString());
                 return (true);
             }
+            else if (kb.Key == Key.ControlZ)
+            {
+                this._lazy.ShowFilesNotStaged(this.Text.ToString());
+                return (true);
+            }
+            else if (kb.Key == Key.ControlX)
+            {
+                this._lazy.ShowFilesNotCommited(this.Text.ToString());
+                return (true);
+            }
             return base.ProcessKey(kb);
         }
     }
