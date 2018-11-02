@@ -34,7 +34,7 @@ namespace lazy.Service
                     directoryRepository = directoryRepository.Parent;
                 if (directoryRepository == null)
                     continue;
-                RepositoryVO repository = solution.GetRepository(directoryRepository.FullName);
+                RepositoryVO repository = solution.GetRepositoryByPath(directoryRepository.FullName);
                 if (repository == null)
                 {
                     repository = new RepositoryVO();

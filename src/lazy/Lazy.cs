@@ -1,4 +1,5 @@
 ﻿using lazy.Service;
+using lazy.Views;
 using lazy.VO;
 using System;
 using System.Collections.Generic;
@@ -42,7 +43,7 @@ namespace lazy
             GitService.UpdateStatus(this.Solution, true);
             if (!EnsureHasNoChanges())
                 return;
-            string branch = this.ShowDialogText("Choose the branch", "Branch:");
+            string branch = WindowManager.ShowDialogText("Choose the branch", "Branch:");
             if (string.IsNullOrEmpty(branch))
                 return;
             GitService.CheckoutBranch(this.Solution, branch);
@@ -112,10 +113,25 @@ namespace lazy
                 MessageBox.ErrorQuery(50, 7, "Commit", "There is no repositories to commit", "Ok");
                 return;
             }
-            string message = ShowDialogText("Commit", "Message");
+            string message = WindowManager.ShowDialogText("Commit", "Message");
             if (string.IsNullOrEmpty(message))
                 return;
             GitService.Commit(this.Solution, message);
+            GitService.UpdateStatus(this.Solution, true);
+            this.RefreshUI();
+        }
+
+        public void ShowBranchs(string repositoryName)
+        {
+            RepositoryVO repository = this.Solution.GetRepositoryByName(repositoryName);
+            List<string> branchs = GitService.ListBranchs(repository);
+            string branch = WindowManager.ShowDialogList("Branchs", branchs);
+            if (string.IsNullOrEmpty(branch))
+                return;
+            GitService.UpdateStatus(this.Solution, true);
+            if (!EnsureHasNoChanges())
+                return;
+            GitService.CheckoutBranch(this.Solution, branch);
             GitService.UpdateStatus(this.Solution, true);
             this.RefreshUI();
         }
@@ -147,14 +163,14 @@ namespace lazy
 
         private CheckBox CreateCheckbox(int x, int y, SolutionVO solution)
         {
-            CheckBox checkbox = new CheckBox(x, y++, solution.Name, solution.Selected);
+            CheckBoxSolution checkbox = new CheckBoxSolution(this, x, y++, solution.Name, solution.Selected);
             checkbox.Toggled += Checkbox_Solution_Toggled;
             return (checkbox);
         }
 
         private CheckBox CreateCheckbox(int x, int y, RepositoryVO repository)
         {
-            CheckBox checkbox = new CheckBox(x, y++, repository.Name, repository.Selected);
+            CheckBoxRepository checkbox = new CheckBoxRepository(this, x, y++, repository.Name, repository.Selected);
             checkbox.Toggled += Checkbox_Repository_Toggled;
             return (checkbox);
         }
@@ -224,20 +240,6 @@ namespace lazy
             }
             builder.Append(" )");
             return (builder.ToString());
-        }
-
-        TextField _textField = null;
-        private string ShowDialogText(string title, string text)
-        {
-            string response = "";
-            var dialog = new Dialog(title, 50, 10, new Button("Ok") { Clicked = () => { response = _textField.Text.ToString(); Application.RequestStop(); } },new Button("Cancel") { Clicked = () => { Application.RequestStop(); } });
-            Label label = new Label(1, 1, text);
-            dialog.Add(label);
-            _textField = new TextField(1, 1, 40, "");
-            dialog.Add(_textField);
-            _textField.EnsureFocus();
-            Application.Run(dialog);
-            return (response);
         }
     }
 }

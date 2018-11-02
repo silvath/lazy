@@ -71,10 +71,18 @@ namespace lazy.VO
             this.Repositories = new List<RepositoryVO>();
         }
 
-        public RepositoryVO GetRepository(string path)
+        public RepositoryVO GetRepositoryByPath(string path)
         {
             foreach (RepositoryVO repository in this.Repositories)
                 if (repository.Path == path)
+                    return (repository);
+            return (null);
+        }
+
+        public RepositoryVO GetRepositoryByName(string name)
+        {
+            foreach (RepositoryVO repository in this.Repositories)
+                if (repository.Name == name)
                     return (repository);
             return (null);
         }
