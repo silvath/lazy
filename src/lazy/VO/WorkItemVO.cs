@@ -8,5 +8,12 @@ namespace lazy.VO
     {
         public int Code { set; get; }
         public string Name { set; get; }
+        public string BranchName
+        {
+            get
+            {
+                return (string.Format("T{0}", this.Code));
+            }
+        }
     }
 }

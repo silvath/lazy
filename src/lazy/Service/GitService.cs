@@ -127,6 +127,28 @@ namespace lazy.Service
                 ProcessService.Execute("git", string.Format(@"checkout {0}", branch), repository.Path);
         }
 
+        public static void CreateBranch(SolutionVO solution, WorkItemVO workItem, bool onlySelected = true)
+        {
+            foreach (RepositoryVO repository in solution.Repositories)
+                if ((!onlySelected) || (repository.Selected))
+                    CreateBranch(repository, workItem);
+        }
+
+        public static void CreateBranch(RepositoryVO repository, WorkItemVO workItem)
+        {
+            string branch = workItem.BranchName;
+            if (repository.Branch == branch)
+                return;
+            List<string> branchs = ListBranchs(repository);
+            if (branchs.Contains(branch))
+            {
+                CheckoutBranch(repository, branch);
+                return;
+            }
+            ProcessService.Execute("git", string.Format(@"checkout -b {0}", branch), repository.Path);
+            ProcessService.Execute("git", string.Format(@"push --set-upstream origin {0}", branch), repository.Path);
+        }
+
         public static List<string> ListBranchs(RepositoryVO repository)
         {
             List<string> branchs = new List<string>();

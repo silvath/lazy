@@ -9,13 +9,14 @@ namespace lazy
     public class WindowManager
     {
         private static TextField _textField = null;
-        public static string ShowDialogText(string title, string text)
+        public static string ShowDialogText(string title, string text, string defaultValue = "")
         {
             string response = "";
             var dialog = new Dialog(title, 50, 10, new Button("Ok") { Clicked = () => { response = _textField.Text.ToString(); Application.RequestStop(); } }, new Button("Cancel") { Clicked = () => { Application.RequestStop(); } });
             Label label = new Label(1, 1, text);
             dialog.Add(label);
             _textField = new TextField(1, 1, 40, "");
+            _textField.Text = defaultValue;
             dialog.Add(_textField);
             _textField.EnsureFocus();
             Application.Run(dialog);

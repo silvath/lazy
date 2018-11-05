@@ -37,6 +37,7 @@ namespace lazy
                 }),
                 new MenuBarItem ("_VSTS", new MenuItem [] {
                     new MenuItem ("_Tasks", "", () => { _lazy.ShowWorkItems(); }),
+                    new MenuItem ("_Create Branch", "", () => { _lazy.CreateBranch(); }),
                 }),
                 new MenuBarItem ("_File", new MenuItem [] {
                     new MenuItem ("_Quit", "", () => { if (Quit ()) top.Running = false; })

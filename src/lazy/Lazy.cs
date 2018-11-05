@@ -17,10 +17,12 @@ namespace lazy
         private Window _windowStatus = null;
         public Lazy(Window windowStatus)
         {
+            this.BranchBase = "master";
             this._windowStatus = windowStatus;
         }
         public SolutionVO Solution { set; get; }
         public WorkItemVO WorkItem { set; get; }
+        public string BranchBase { set; get; }
 
         public void RefreshGitStatus()
         {
@@ -45,7 +47,10 @@ namespace lazy
             GitService.UpdateStatus(this.Solution, true);
             if (!EnsureHasNoChanges())
                 return;
-            string branch = WindowManager.ShowDialogText("Choose the branch", "Branch:");
+            string defaultValue = string.Empty;
+            if (this.WorkItem != null)
+                defaultValue = this.WorkItem.BranchName;
+            string branch = WindowManager.ShowDialogText("Choose the branch", "Branch:", defaultValue);
             if (string.IsNullOrEmpty(branch))
                 return;
             GitService.CheckoutBranch(this.Solution, branch);
@@ -139,6 +144,24 @@ namespace lazy
                 objects.Add(workItem, string.Format("{0} - {1}", workItem.Code, workItem.Name));
             WorkItemVO workitemSelected = WindowManager.ShowDialogObjects<WorkItemVO>("WorkItems", objects);
             this.WorkItem = workitemSelected;
+            this.RefreshUI();
+        }
+
+        public void CreateBranch()
+        {
+            if (this.Solution == null)
+                return;
+            if (this.WorkItem == null)
+            {
+                MessageBox.ErrorQuery(50, 7, "VSTS", "You must select a work item first", "Ok");
+                return;
+            }
+            if (!EnsureHasNoChanges())
+                return;
+            GitService.CheckoutBranch(this.Solution, this.BranchBase);
+            GitService.Pull(this.Solution);
+            GitService.CreateBranch(this.Solution, this.WorkItem);
+            GitService.UpdateStatus(this.Solution, true);
             this.RefreshUI();
         }
 
