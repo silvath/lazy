@@ -31,6 +31,15 @@ namespace lazy
             return (listView.Selection);
         }
 
+        public static T ShowDialogObjects<T>(string title, Dictionary<T,string> objects)
+        {
+            var dialog = new Dialog(title, 50, 22, new Button("Close", true) { Clicked = () => { Application.RequestStop(); } });
+            ListViewObject<T> listView = new ListViewObject<T>(new Rect(1, 1, 45, 16), objects);
+            dialog.Add(listView);
+            Application.Run(dialog);
+            return (listView.Selection);
+        }
+
         public static bool ShowDialogFilesNotStaged(string title, Dictionary<string,string> files)
         {
             var dialog = new Dialog(title, 100, 30, new Button("Close", true) { Clicked = () => { Application.RequestStop(); } });

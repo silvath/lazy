@@ -20,6 +20,7 @@ namespace lazy
             this._windowStatus = windowStatus;
         }
         public SolutionVO Solution { set; get; }
+        public WorkItemVO WorkItem { set; get; }
 
         public void RefreshGitStatus()
         {
@@ -122,6 +123,25 @@ namespace lazy
             this.RefreshUI();
         }
 
+        public void ShowWorkItems()
+        {
+            if (this.Solution == null)
+                return;
+            if (!AzureDevOpsService.IsConfigurated())
+            {
+                MessageBox.ErrorQuery(50, 7, "VSTS", "You must configure VSTS client first", "Ok");
+                return;
+            }
+            string path = Directory.GetParent(this.Solution.Path).FullName;
+            List<WorkItemVO> workItems = AzureDevOpsService.ListWorkItems(path);
+            Dictionary<WorkItemVO, string> objects = new Dictionary<WorkItemVO, string>();
+            foreach (WorkItemVO workItem in workItems)
+                objects.Add(workItem, string.Format("{0} - {1}", workItem.Code, workItem.Name));
+            WorkItemVO workitemSelected = WindowManager.ShowDialogObjects<WorkItemVO>("WorkItems", objects);
+            this.WorkItem = workitemSelected;
+            this.RefreshUI();
+        }
+
         public void ShowBranchs(string repositoryName)
         {
             RepositoryVO repository = this.Solution.GetRepositoryByName(repositoryName);
@@ -179,7 +199,7 @@ namespace lazy
             int x = 1;
             int y = 0;
             List<View> views = new List<View>();
-            views.Add(CreateCheckbox(x, y++, this.Solution));
+            views.Add(CreateCheckbox(x, y++, this.Solution, this.WorkItem));
             foreach (RepositoryVO repository in this.Solution.Repositories)
             {
                 views.Add(CreateCheckbox(x + 4, y++, repository));
@@ -196,9 +216,12 @@ namespace lazy
                 window.Remove(window.Subviews[0].Subviews[window.Subviews[0].Subviews.Count - 1]);
         }
 
-        private CheckBox CreateCheckbox(int x, int y, SolutionVO solution)
+        private CheckBox CreateCheckbox(int x, int y, SolutionVO solution, WorkItemVO workitem)
         {
-            CheckBoxSolution checkbox = new CheckBoxSolution(this, x, y++, solution.Name, solution.Selected);
+            string name = solution.Name;
+            if (workitem != null)
+                name = name + string.Format(" (WIT - {0} - {1} )", workitem.Code, workitem.Name);
+            CheckBoxSolution checkbox = new CheckBoxSolution(this, x, y++, name, solution.Selected);
             checkbox.Toggled += Checkbox_Solution_Toggled;
             return (checkbox);
         }

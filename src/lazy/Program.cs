@@ -36,7 +36,7 @@ namespace lazy
                     new MenuItem ("_Push", "", () => { _lazy.PushGit(); }),
                 }),
                 new MenuBarItem ("_VSTS", new MenuItem [] {
-                    new MenuItem ("_No donuts for you", "", () => { if (Quit ()) top.Running = false; })
+                    new MenuItem ("_Tasks", "", () => { _lazy.ShowWorkItems(); }),
                 }),
                 new MenuBarItem ("_File", new MenuItem [] {
                     new MenuItem ("_Quit", "", () => { if (Quit ()) top.Running = false; })
