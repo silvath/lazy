@@ -20,6 +20,11 @@ namespace lazy.Views
             {
                 WindowManager.ShowDialogHelpSolution();
             }
+            else if (kb.Key == Key.ControlO)
+            {
+                this._lazy.OpenCommandSolution(this.Text.ToString());
+                return (true);
+            }
             return base.ProcessKey(kb);
         }
     }

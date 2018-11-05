@@ -3,6 +3,7 @@ using lazy.Views;
 using lazy.VO;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using Terminal.Gui;
 
@@ -158,6 +159,17 @@ namespace lazy
             this.RefreshUI();
         }
 
+        public void OpenCommandSolution(string repositoryName)
+        {
+            string path = Directory.GetParent(this.Solution.Path).FullName;
+            ProcessService.Open(path);
+        }
+
+        public void OpenCommandRepository(string repositoryName)
+        {
+            RepositoryVO repository = this.Solution.GetRepositoryByName(repositoryName);
+            ProcessService.Open(repository.Path);
+        }
 
         public void RefreshUI()
         {

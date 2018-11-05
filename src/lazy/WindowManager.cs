@@ -58,7 +58,8 @@ namespace lazy
         public static void ShowDialogHelpSolution()
         {
             List<string> list = new List<string>();
-            list.Add("h - help repository");
+            list.Add("h - help solution");
+            list.Add("o - open solution folder");
             ShowDialogList("Help Solution", list);
         }
 
@@ -66,6 +67,7 @@ namespace lazy
         {
             List<string> list = new List<string>();
             list.Add("h - help repository");
+            list.Add("o - open repository folder");
             list.Add("b - branchs");
             list.Add("z - not staged");
             list.Add("x - not commited");

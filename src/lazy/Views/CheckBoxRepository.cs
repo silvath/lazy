@@ -35,6 +35,11 @@ namespace lazy.Views
                 this._lazy.ShowFilesNotCommited(this.Text.ToString());
                 return (true);
             }
+            else if (kb.Key == Key.ControlO)
+            {
+                this._lazy.OpenCommandRepository(this.Text.ToString());
+                return (true);
+            }
             return base.ProcessKey(kb);
         }
     }

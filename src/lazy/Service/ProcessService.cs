@@ -7,6 +7,20 @@ namespace lazy.Service
 {
     public class ProcessService
     {
+        public static void Open(string workingDirectory)
+        {
+            string command = "cmd";
+            string arguments = "";
+            ProcessStartInfo startInfo = new ProcessStartInfo(command, arguments);
+            startInfo.FileName = command;
+            startInfo.WorkingDirectory = workingDirectory;
+            startInfo.UseShellExecute = true;
+            startInfo.CreateNoWindow = false;
+            Process process = new Process();
+            process.StartInfo = startInfo;
+            process.Start();
+        }
+
         public static string Execute(string command, string arguments = null, string workingDirectory = null)
         {
             ProcessStartInfo startInfo = new ProcessStartInfo();
