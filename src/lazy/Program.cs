@@ -46,7 +46,7 @@ namespace lazy
             //Load Arg
             _lazy = new Lazy(win);
             if (!string.IsNullOrEmpty(Solution))
-                _lazy.Solution = LoaderService.Load(Solution);
+                _lazy.Solution = FileService.Load(Solution);
             if (string.IsNullOrEmpty(Solution))
             {
                 Console.WriteLine("You must inform the solution name/path.");

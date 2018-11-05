@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 
 namespace lazy.Service
 {
-    public class LoaderService
+    public class FileService
     {
         private const string ER_SOLUTION_PROJECT = @"Project\(\""\{(\w|\d|\-)+\}""\) = \""(?<name>(\w)+)\""\, \""(?<path>(\w|\.|\\)+)""";
         public static SolutionVO Load(string pathOrName)
