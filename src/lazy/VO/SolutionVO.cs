@@ -55,6 +55,16 @@ namespace lazy.VO
                 return (false);
             }
         }
+        public bool HasUnmergedPaths
+        {
+            get
+            {
+                foreach (RepositoryVO repository in this.Repositories)
+                    if ((repository.Selected) && (repository.HasUnmergedPaths))
+                        return (true);
+                return (false);
+            }
+        }
         public bool HasChangesPush
         {
             get

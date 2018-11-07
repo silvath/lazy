@@ -63,5 +63,17 @@ namespace lazy.Service
             workItem.Name = line.Substring(index + 1).Trim();
             return (workItem);
         }
+
+        public static List<PullRequestVO> ListPullRequests(string workingDirectory)
+        {
+            List<PullRequestVO> pullRequests = new List<PullRequestVO>();
+            string command = _vstsPath;
+            string arguments = @"code pr list";
+            string response = ProcessService.Execute(command, arguments, workingDirectory);
+            //Only commit in current branch
+            //git cherry master T1078
+
+            return (pullRequests);
+        }
     }
 }

@@ -12,6 +12,7 @@ namespace lazy.Service
         private const string ER_BRANCH = @"On branch (?<name>(\w|\-)+)";
         private const string ER_HASCHANGES_NOT_STAGED = "Changes not staged for commit";
         private const string ER_HASCHANGES_NOT_COMMITED = "Changes to be committed";
+        private const string ER_HASCHANGES_UNMERGED_PATH = "You have unmerged paths";
         private const string ER_HASCHANGES_UNTRACKED_FILES = "Untracked files:";
         private const string ER_BRANCH_AHREAD = @"Your branch is ahead of \'(\w|\/)+\' by (?<head>(\d)+) commit";
         private const string ER_BRANCH_BEHIND = @"Your branch is behind \'(\w|\/)+\' by (?<head>(\d)+) commit";
@@ -46,6 +47,7 @@ namespace lazy.Service
             if ((match != null) && (!string.IsNullOrEmpty(match.Groups["head"].Value)))
                 repository.Head = 0 - Int32.Parse(match.Groups["head"].Value);
             repository.HasChangesNotCommited = Regex.IsMatch(response, ER_HASCHANGES_NOT_COMMITED);
+            repository.HasUnmergedPaths = Regex.IsMatch(response, ER_HASCHANGES_UNMERGED_PATH);
         }
 
         public static void Fetch(SolutionVO solution, bool onlySelected = true)

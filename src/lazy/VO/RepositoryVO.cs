@@ -16,11 +16,12 @@ namespace lazy.VO
         {
             get
             {
-                return (HasChangesNotStaged || HasChangesNotCommited);
+                return (HasChangesNotStaged || HasChangesNotCommited || HasUnmergedPaths);
             }
         }
         public bool HasChangesNotStaged { set; get; }
         public bool HasChangesNotCommited { set; get; }
+        public bool HasUnmergedPaths { set; get; }
         public bool HasChangesPush
         {
             get

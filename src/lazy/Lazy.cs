@@ -14,6 +14,7 @@ namespace lazy
         private const int COLOR_BACKGROUND = 159;
         private const int COLOR_NOT_STAGED = 200;
         private const int COLOR_NOT_COMMITTED = 32;
+        private const int COLOR_UNMERGED_PATH = 0;
         private Window _windowStatus = null;
         public Lazy(Window windowStatus)
         {
@@ -165,6 +166,21 @@ namespace lazy
             this.RefreshUI();
         }
 
+        public void CreatePullRequest()
+        {
+            if (this.Solution == null)
+                return;
+            if (this.WorkItem == null)
+            {
+                MessageBox.ErrorQuery(50, 7, "VSTS", "You must select a work item first", "Ok");
+                return;
+            }
+            if (!EnsureHasNoChanges())
+                return;
+            GitService.UpdateStatus(this.Solution, true);
+            this.RefreshUI();
+        }
+
         public void ShowBranchs(string repositoryName)
         {
             RepositoryVO repository = this.Solution.GetRepositoryByName(repositoryName);
@@ -268,6 +284,9 @@ namespace lazy
 
         private void InsertRepositoryInfo(List<View> views, RepositoryVO repository, int x, int y)
         {
+            if (repository.HasUnmergedPaths)
+                views.Add(CreateLabel(x, y, " ", COLOR_UNMERGED_PATH));
+            x = x + 2;
             if (repository.HasChangesNotStaged)
                 views.Add(CreateLabel(x, y, " ", COLOR_NOT_STAGED));
             x = x + 2;
