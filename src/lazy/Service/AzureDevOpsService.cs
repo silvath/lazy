@@ -88,7 +88,9 @@ namespace lazy.Service
 
         public static void CreatePullRequest(RepositoryVO repository, WorkItemVO workItem)
         {
-            //TODO: Work over here
+            string command = _vstsPath;
+            string arguments = string.Format(@"code pr create --title ""{0} {1}""", workItem.TaskID, workItem.Name);
+            string response = ProcessService.Execute(command, arguments, repository.Path);
         }
     }
 }
