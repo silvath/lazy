@@ -37,7 +37,7 @@ namespace lazy
         {
             if (!this.Solution.HasChanges)
                 return (true);
-            MessageBox.ErrorQuery(50, 7, "Changes", "There is repositories with changes", "Ok");
+            MessageBox.ErrorQuery(50, 7, "Changes", "There is repositories with changes or conflicts", "Ok");
             return (false);
         }
 
@@ -50,7 +50,7 @@ namespace lazy
                 return;
             string defaultValue = string.Empty;
             if (this.WorkItem != null)
-                defaultValue = this.WorkItem.BranchName;
+                defaultValue = this.WorkItem.TaskID;
             string branch = WindowManager.ShowDialogText("Choose the branch", "Branch:", defaultValue);
             if (string.IsNullOrEmpty(branch))
                 return;
@@ -170,13 +170,26 @@ namespace lazy
         {
             if (this.Solution == null)
                 return;
-            if (this.WorkItem == null)
-            {
-                MessageBox.ErrorQuery(50, 7, "VSTS", "You must select a work item first", "Ok");
-                return;
-            }
+            //if (this.WorkItem == null)
+            //{
+            //    MessageBox.ErrorQuery(50, 7, "VSTS", "You must select a work item first", "Ok");
+            //    return;
+            //}
             if (!EnsureHasNoChanges())
                 return;
+            //GitService.CheckoutBranch(this.Solution, this.WorkItem.BranchName);
+            //GitService.Pull(this.Solution);
+            //GitService.UpdateStatus(this.Solution, true);
+            if (!EnsureHasNoChanges())
+                return;
+            foreach (RepositoryVO repository in this.Solution.Repositories)
+            {
+                if ((!repository.Selected))
+                    continue;
+                List<PullRequestVO> pullRequests = AzureDevOpsService.ListPullRequests(repository.Path);
+
+            }
+            //TODO: Work over here
             GitService.UpdateStatus(this.Solution, true);
             this.RefreshUI();
         }
@@ -199,7 +212,7 @@ namespace lazy
         public void ShowFilesNotStaged(string repositoryName)
         {
             RepositoryVO repository = this.Solution.GetRepositoryByName(repositoryName);
-            Dictionary<string,string> files = GitService.ListFilesNotStaged(repository);
+            Dictionary<string, string> files = GitService.ListFilesNotStaged(repository);
             bool updated = WindowManager.ShowDialogFilesNotStaged("Files Not Staged", files);
             if (!updated)
                 return;

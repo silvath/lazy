@@ -8,7 +8,7 @@ namespace lazy.VO
     {
         public int Code { set; get; }
         public string Name { set; get; }
-        public string BranchName
+        public string TaskID
         {
             get
             {

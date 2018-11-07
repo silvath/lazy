@@ -36,6 +36,8 @@ namespace lazy.Service
         public static List<WorkItemVO> ListWorkItems(string workingDirectory)
         {
             List<WorkItemVO> workItems = new List<WorkItemVO>();
+            if (!IsConfigurated())
+                return (null);
             string command = _vstsPath;
             string arguments = @"work item query --wiql ""SELECT System.ID, System.Title FROM workitems WHERE[System.AssignedTo] = @Me AND[System.State] = 'In Progress' ORDER BY System.ID DESC""";
             string response = ProcessService.Execute(command, arguments, workingDirectory);
@@ -66,14 +68,28 @@ namespace lazy.Service
 
         public static List<PullRequestVO> ListPullRequests(string workingDirectory)
         {
+            if (!IsConfigurated())
+                return (null);
             List<PullRequestVO> pullRequests = new List<PullRequestVO>();
             string command = _vstsPath;
             string arguments = @"code pr list";
             string response = ProcessService.Execute(command, arguments, workingDirectory);
+            TableVO table = new TableVO(response);
+            foreach (TableRowVO row in table.Rows)
+            {
+                PullRequestVO pullRequest = new PullRequestVO();
+                pullRequest.ID = Int32.Parse(row.GetValue("ID"));
+                pullRequest.Title = row.GetValue("Title");
+                pullRequest.Repository = row.GetValue("Repository");
+                pullRequests.Add(pullRequest);
+            }
+            return (pullRequests);
+        }
+
+        public static void CreatePullRequest(string workingDirectory)
+        {
             //Only commit in current branch
             //git cherry master T1078
-
-            return (pullRequests);
         }
     }
 }

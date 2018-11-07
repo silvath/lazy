@@ -138,7 +138,7 @@ namespace lazy.Service
 
         public static void CreateBranch(RepositoryVO repository, WorkItemVO workItem)
         {
-            string branch = workItem.BranchName;
+            string branch = workItem.TaskID;
             if (repository.Branch == branch)
                 return;
             List<string> branchs = ListBranchs(repository);

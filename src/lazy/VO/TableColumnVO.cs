@@ -7,6 +7,7 @@ namespace lazy.VO
     public class TableColumnVO
     {
         public string Name { set; get; }
+        public int Start { set; get; }
         public int Size { set; get; }
     }
 }
