@@ -170,26 +170,34 @@ namespace lazy
         {
             if (this.Solution == null)
                 return;
-            //if (this.WorkItem == null)
-            //{
-            //    MessageBox.ErrorQuery(50, 7, "VSTS", "You must select a work item first", "Ok");
-            //    return;
-            //}
+            if (this.WorkItem == null)
+            {
+                MessageBox.ErrorQuery(50, 7, "VSTS", "You must select a work item first", "Ok");
+                return;
+            }
             if (!EnsureHasNoChanges())
                 return;
-            //GitService.CheckoutBranch(this.Solution, this.WorkItem.BranchName);
-            //GitService.Pull(this.Solution);
-            //GitService.UpdateStatus(this.Solution, true);
+            GitService.CheckoutBranch(this.Solution, this.WorkItem.TaskID);
+            GitService.Pull(this.Solution);
+            GitService.UpdateStatus(this.Solution, true);
             if (!EnsureHasNoChanges())
                 return;
             foreach (RepositoryVO repository in this.Solution.Repositories)
             {
                 if ((!repository.Selected))
                     continue;
+                if (!GitService.HasCommits(repository, this.WorkItem, this.BranchBase))
+                    continue;
+                bool isPullRequestAlreadyCreated = false;
                 List<PullRequestVO> pullRequests = AzureDevOpsService.ListPullRequests(repository.Path);
-
+                foreach (PullRequestVO pullRequest in pullRequests)
+                    if (isPullRequestAlreadyCreated = ((pullRequest.Repository == repository.Name) && (pullRequest.Title.StartsWith(this.WorkItem.TaskID))))
+                        break;
+                if (isPullRequestAlreadyCreated)
+                    continue;
+                //Create PR
+                AzureDevOpsService.CreatePullRequest(repository, this.WorkItem);
             }
-            //TODO: Work over here
             GitService.UpdateStatus(this.Solution, true);
             this.RefreshUI();
         }

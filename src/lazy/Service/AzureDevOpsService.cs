@@ -86,10 +86,9 @@ namespace lazy.Service
             return (pullRequests);
         }
 
-        public static void CreatePullRequest(string workingDirectory)
+        public static void CreatePullRequest(RepositoryVO repository, WorkItemVO workItem)
         {
-            //Only commit in current branch
-            //git cherry master T1078
+            //TODO: Work over here
         }
     }
 }

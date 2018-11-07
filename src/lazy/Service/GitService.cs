@@ -245,5 +245,15 @@ namespace lazy.Service
                 return (ER_HASCHANGES_NOT_COMMITED);
             return (null);
         }
+
+        public static bool HasCommits(RepositoryVO repository, WorkItemVO workItem, string branchBase)
+        {
+            string response = ProcessService.Execute("git", string.Format("cherry {0} {1}", branchBase, workItem.TaskID), repository.Path);
+            string[] lines = response.Split("\r\n");
+            foreach (string line in lines)
+                if (!string.IsNullOrEmpty(line.Trim()))
+                    return (true);
+            return (false);
+        }
     }
 }
