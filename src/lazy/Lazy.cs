@@ -124,6 +124,8 @@ namespace lazy
             string message = WindowManager.ShowDialogText("Commit", "Message");
             if (string.IsNullOrEmpty(message))
                 return;
+            if (this.WorkItem != null)
+                message = string.Format("#{0} {1}", this.WorkItem.Code, message);
             GitService.Commit(this.Solution, message);
             GitService.UpdateStatus(this.Solution, true);
             this.RefreshUI();
