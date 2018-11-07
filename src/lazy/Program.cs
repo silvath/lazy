@@ -39,6 +39,7 @@ namespace lazy
                     new MenuItem ("_Tasks", "", () => { _lazy.ShowWorkItems(); }),
                     new MenuItem ("_Create Branch", "", () => { _lazy.CreateBranch(); }),
                     new MenuItem ("_Create Pull Request", "", () => { _lazy.CreatePullRequest(); }),
+                    new MenuItem ("_Add Reviewer to Pull Request", "", () => { _lazy.AddReviewerToPullRequest(); }),
                 }),
                 new MenuBarItem ("_File", new MenuItem [] {
                     new MenuItem ("_Quit", "", () => { if (Quit ()) top.Running = false; })

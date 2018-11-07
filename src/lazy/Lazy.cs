@@ -181,9 +181,11 @@ namespace lazy
                 return;
             GitService.CheckoutBranch(this.Solution, this.WorkItem.TaskID);
             GitService.Pull(this.Solution);
+            GitService.Push(this.Solution);
             GitService.UpdateStatus(this.Solution, true);
             if (!EnsureHasNoChanges())
                 return;
+            GitService.Push(this.Solution);
             foreach (RepositoryVO repository in this.Solution.Repositories)
             {
                 if ((!repository.Selected))
@@ -201,6 +203,42 @@ namespace lazy
                 AzureDevOpsService.CreatePullRequest(repository, this.WorkItem);
             }
             GitService.UpdateStatus(this.Solution, true);
+            this.RefreshUI();
+        }
+
+        public void AddReviewerToPullRequest()
+        {
+            if (this.Solution == null)
+                return;
+            if (this.WorkItem == null)
+            {
+                MessageBox.ErrorQuery(50, 7, "VSTS", "You must select a work item first", "Ok");
+                return;
+            }
+            string reviewerEmail = "thsilva@gmail.com";
+            reviewerEmail = WindowManager.ShowDialogText("Choose the Reviewer", "E-mail:", reviewerEmail);
+            if (string.IsNullOrEmpty(reviewerEmail))
+                return;
+            foreach (RepositoryVO repository in this.Solution.Repositories)
+            {
+                if ((!repository.Selected))
+                    continue;
+                List<PullRequestVO> pullRequests = AzureDevOpsService.ListPullRequests(repository.Path);
+                PullRequestVO pullRequestWorkItem = null;
+                foreach (PullRequestVO pullRequest in pullRequests)
+                {
+                    if (((pullRequest.Repository != repository.Name) || (!pullRequest.Title.StartsWith(this.WorkItem.TaskID))))
+                        continue;
+                    pullRequestWorkItem = pullRequest;
+                    break;
+                }
+                if (pullRequestWorkItem == null)
+                    continue;
+                List<string> reviewers = AzureDevOpsService.ListPullRequestReviewers(repository, pullRequestWorkItem);
+                if (reviewers.Contains(reviewerEmail))
+                    continue;
+                AzureDevOpsService.AddPullRequestReviewer(repository, pullRequestWorkItem, reviewerEmail);
+            }
             this.RefreshUI();
         }
 

@@ -92,5 +92,29 @@ namespace lazy.Service
             string arguments = string.Format(@"code pr create --title ""{0} {1}"" --work-items {2}", workItem.TaskID, workItem.Name, workItem.Code);
             string response = ProcessService.Execute(command, arguments, repository.Path);
         }
+
+        public static List<string> ListPullRequestReviewers(RepositoryVO repository, PullRequestVO pullRequest)
+        {
+            if (!IsConfigurated())
+                return (null);
+            List<string> reviewers = new List<string>();
+            string command = _vstsPath;
+            string arguments = @"code pr reviewers list --id " + pullRequest.ID;
+            string response = ProcessService.Execute(command, arguments, repository.Path);
+            TableVO table = new TableVO(response);
+            foreach (TableRowVO row in table.Rows)
+                reviewers.Add(row.GetValue("Email"));
+            return (reviewers);
+        }
+
+        public static void AddPullRequestReviewer(RepositoryVO repository, PullRequestVO pullRequest, string reviewerEmail)
+        {
+            if (!IsConfigurated())
+                return;
+            List<string> reviewers = new List<string>();
+            string command = _vstsPath;
+            string arguments = string.Format("code pr reviewers add --id {0} --reviewers {1}", pullRequest.ID, reviewerEmail);
+            string response = ProcessService.Execute(command, arguments, repository.Path);
+        }
     }
 }
