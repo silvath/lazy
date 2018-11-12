@@ -231,7 +231,12 @@ namespace lazy.Service
                     buffer.Add(line);
             }
             if ((lastSector != null) && (buffer.Count > 0))
-                files.Add(lastSector, buffer);
+            {
+                if (files.ContainsKey(lastSector))
+                    files[lastSector].AddRange(buffer);
+                else
+                    files.Add(lastSector, buffer);
+            }
             return (files);
         }
 
