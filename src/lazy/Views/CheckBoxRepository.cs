@@ -40,6 +40,11 @@ namespace lazy.Views
                 this._lazy.OpenCommandRepository(this.Text.ToString());
                 return (true);
             }
+            else if (kb.Key == Key.ControlP)
+            {
+                this._lazy.OpenCodeRepository(this.Text.ToString());
+                return (true);
+            }
             return base.ProcessKey(kb);
         }
     }

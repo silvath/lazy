@@ -70,6 +70,7 @@ namespace lazy
             List<string> list = new List<string>();
             list.Add("h - help solution");
             list.Add("o - open solution folder");
+            list.Add("p - open code in folder");
             ShowDialogList("Help Solution", list);
         }
 
@@ -78,6 +79,7 @@ namespace lazy
             List<string> list = new List<string>();
             list.Add("h - help repository");
             list.Add("o - open repository folder");
+            list.Add("p - open code in folder");
             list.Add("b - branchs");
             list.Add("z - not staged");
             list.Add("x - not commited");

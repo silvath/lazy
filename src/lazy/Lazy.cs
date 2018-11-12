@@ -285,10 +285,22 @@ namespace lazy
             ProcessService.Open(path);
         }
 
+        public void OpenCodeSolution(string repositoryName)
+        {
+            string path = Directory.GetParent(this.Solution.Path).FullName;
+            ProcessService.OpenCode(path);
+        }
+
         public void OpenCommandRepository(string repositoryName)
         {
             RepositoryVO repository = this.Solution.GetRepositoryByName(repositoryName);
             ProcessService.Open(repository.Path);
+        }
+
+        public void OpenCodeRepository(string repositoryName)
+        {
+            RepositoryVO repository = this.Solution.GetRepositoryByName(repositoryName);
+            ProcessService.OpenCode(repository.Path);
         }
 
         public void RefreshUI()
