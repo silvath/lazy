@@ -293,6 +293,8 @@ namespace lazy
 
         public void RefreshUI()
         {
+            CheckBox focused = this._windowStatus.MostFocused as CheckBox;
+            string id = focused != null ? focused.Text.ToString() : null;
             Clear(_windowStatus);
             if (this.Solution == null)
                 return;
@@ -308,6 +310,19 @@ namespace lazy
                 InsertRepositoryInfo(views, repository, x + 8, y++);
             }
             _windowStatus.Add(views.ToArray());
+            if (string.IsNullOrEmpty(id))
+                return;
+            foreach (View view in views)
+            {
+                CheckBox viewCheckbox = view as CheckBox;
+                if (viewCheckbox == null)
+                    continue;
+                if (viewCheckbox.Text.ToString() != id)
+                    continue;
+                _windowStatus.SetFocus(view);
+                _windowStatus.PositionCursor();
+                break;
+            }
         }
 
         private void Clear(Window window)
