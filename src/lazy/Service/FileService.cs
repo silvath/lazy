@@ -30,6 +30,11 @@ namespace lazy.Service
                 FileInfo fileSolution = new FileInfo(solution.Path);
                 FileInfo fileInfo = new FileInfo(Path.Combine(fileSolution.Directory.FullName, project.Path));
                 DirectoryInfo directoryRepository = fileInfo.Directory;
+                if (!Directory.Exists(directoryRepository.FullName))
+                {
+                    Console.WriteLine($"Cant find project Path: {directoryRepository.FullName}");
+                    return (null);
+                }
                 while ((directoryRepository != null) && (!GitService.IsGitFolder(directoryRepository.FullName)))
                     directoryRepository = directoryRepository.Parent;
                 if (directoryRepository == null)
