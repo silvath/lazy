@@ -29,7 +29,9 @@ namespace lazy
         {
             if (this.Solution == null)
                 return;
+            WindowManager.ShowLog();
             GitService.UpdateStatus(this.Solution);
+            WindowManager.CloseLog();
             this.RefreshUI();
         }
 
@@ -54,8 +56,10 @@ namespace lazy
             string branch = WindowManager.ShowDialogText("Choose the branch", "Branch:", defaultValue);
             if (string.IsNullOrEmpty(branch))
                 return;
+            WindowManager.ShowLog();
             GitService.CheckoutBranch(this.Solution, branch);
             GitService.UpdateStatus(this.Solution, true);
+            WindowManager.CloseLog();
             this.RefreshUI();
         }
 
@@ -64,8 +68,10 @@ namespace lazy
             if (this.Solution == null)
                 return;
             GitService.UpdateStatus(this.Solution, true);
+            WindowManager.ShowLog();
             GitService.Fetch(this.Solution);
             GitService.UpdateStatus(this.Solution, true);
+            WindowManager.CloseLog();
             this.RefreshUI();
         }
 
@@ -76,8 +82,10 @@ namespace lazy
             GitService.UpdateStatus(this.Solution, true);
             if (!EnsureHasNoChanges())
                 return;
+            WindowManager.ShowLog();
             GitService.Pull(this.Solution);
             GitService.UpdateStatus(this.Solution, true);
+            WindowManager.CloseLog();
             this.RefreshUI();
         }
 
@@ -91,8 +99,10 @@ namespace lazy
                 MessageBox.ErrorQuery(50, 7, "Commit", "There is no repositories to push", "Ok");
                 return;
             }
+            WindowManager.ShowLog();
             GitService.Push(this.Solution);
             GitService.UpdateStatus(this.Solution, true);
+            WindowManager.CloseLog();
             this.RefreshUI();
         }
 
@@ -106,8 +116,10 @@ namespace lazy
                 MessageBox.ErrorQuery(50, 7, "Add", "There is no files to add", "Ok");
                 return;
             }
+            WindowManager.ShowLog();
             GitService.Add(this.Solution);
             GitService.UpdateStatus(this.Solution, true);
+            WindowManager.CloseLog();
             this.RefreshUI();
         }
 
@@ -126,8 +138,10 @@ namespace lazy
                 return;
             if (this.WorkItem != null)
                 message = string.Format("#{0} {1}", this.WorkItem.Code, message);
+            WindowManager.ShowLog();
             GitService.Commit(this.Solution, message);
             GitService.UpdateStatus(this.Solution, true);
+            WindowManager.CloseLog();
             this.RefreshUI();
         }
 
@@ -161,10 +175,12 @@ namespace lazy
             }
             if (!EnsureHasNoChanges())
                 return;
+            WindowManager.ShowLog();
             GitService.CheckoutBranch(this.Solution, this.BranchBase);
             GitService.Pull(this.Solution);
             GitService.CreateBranch(this.Solution, this.WorkItem);
             GitService.UpdateStatus(this.Solution, true);
+            WindowManager.CloseLog();
             this.RefreshUI();
         }
 
@@ -179,12 +195,16 @@ namespace lazy
             }
             if (!EnsureHasNoChanges())
                 return;
+            WindowManager.ShowLog();
             GitService.CheckoutBranch(this.Solution, this.WorkItem.TaskID);
             GitService.Pull(this.Solution);
             GitService.Push(this.Solution);
             GitService.UpdateStatus(this.Solution, true);
-            if (!EnsureHasNoChanges())
+            if (EnsureHasNoChanges())
+            {
+                WindowManager.CloseLog();
                 return;
+            }
             GitService.Push(this.Solution);
             foreach (RepositoryVO repository in this.Solution.Repositories)
             {
@@ -203,6 +223,7 @@ namespace lazy
                 AzureDevOpsService.CreatePullRequest(repository, this.WorkItem);
             }
             GitService.UpdateStatus(this.Solution, true);
+            WindowManager.CloseLog();
             this.RefreshUI();
         }
 
@@ -219,6 +240,7 @@ namespace lazy
             reviewerEmail = WindowManager.ShowDialogText("Choose the Reviewer", "E-mail:", reviewerEmail);
             if (string.IsNullOrEmpty(reviewerEmail))
                 return;
+            WindowManager.ShowLog();
             foreach (RepositoryVO repository in this.Solution.Repositories)
             {
                 if ((!repository.Selected))
@@ -239,6 +261,7 @@ namespace lazy
                     continue;
                 AzureDevOpsService.AddPullRequestReviewer(repository, pullRequestWorkItem, reviewerEmail);
             }
+            WindowManager.CloseLog();
             this.RefreshUI();
         }
 

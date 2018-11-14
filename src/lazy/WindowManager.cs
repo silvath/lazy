@@ -9,6 +9,9 @@ namespace lazy
     public class WindowManager
     {
         private static TextField _textField = null;
+        private static Window _windowLog = null;
+        private static ListView _listViewLog = null;
+        private static List<string> _logs = new List<string>();
         public static string ShowDialogText(string title, string text, string defaultValue = "")
         {
             string response = "";
@@ -84,6 +87,60 @@ namespace lazy
             list.Add("z - not staged");
             list.Add("x - not commited");
             ShowDialogList("Help Repository", list);
+        }
+
+        public static void ShowLog()
+        {
+            _logs = new List<string>();
+            if (_windowLog != null)
+                return;
+            var top = Application.Top;
+            _windowLog = new Window(new Rect(3, 2, top.Frame.Width - 6, top.Frame.Height - 4), "Log");
+            _listViewLog = new ListView(new Rect(1, 1, 95, 20), _logs);
+            _windowLog.Add(_listViewLog);
+            top.Add(_windowLog);
+            top.SetFocus(_windowLog);
+            Application.Refresh();
+        }
+
+        public static void AddLog(string message)
+        {
+            if (_windowLog == null)
+                return;
+            if (message.Length > 70)
+                message = message.Substring(0, 70);
+            _logs.Add(message);
+            _listViewLog.SetSource(GetLogs());
+            _listViewLog.SetNeedsDisplay();
+            Application.Refresh();
+        }
+
+        private static List<string> GetLogs()
+        {
+            List<string> logs = new List<string>();
+            for (int i = _logs.Count - 1; i >= 0 && logs.Count < 20; i--)
+                logs.Add(_logs[i]);
+            return (logs);
+        }
+
+        public static void AddLogStart(string message)
+        {
+            AddLog($"start: {message}");
+        }
+
+        public static void AddLogEnd(string message)
+        {
+            AddLog($"end  : {message}");
+        }
+
+        public static void CloseLog()
+        {
+            if (_windowLog == null)
+                return;
+            var top = Application.Top;
+            top.Remove(_windowLog);
+            _windowLog = null;
+            top.SetFocus(top.Subviews[0]);
         }
     }
 }

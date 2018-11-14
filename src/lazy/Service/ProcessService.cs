@@ -65,6 +65,8 @@ namespace lazy.Service
 
         public static string Execute(string command, string arguments = null, string workingDirectory = null)
         {
+            string fullCommand = $"{command} {arguments} ({workingDirectory})";
+            WindowManager.AddLogStart(fullCommand);
             ProcessStartInfo startInfo = new ProcessStartInfo();
             startInfo.FileName = command;
             if (!string.IsNullOrEmpty(arguments))
@@ -79,7 +81,8 @@ namespace lazy.Service
             process.Start();
             process.WaitForExit();
             string data = process.StandardOutput.ReadToEnd();
-            return(data);
+            WindowManager.AddLogEnd(fullCommand);
+            return (data);
         }
     }
 }
