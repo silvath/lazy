@@ -40,7 +40,10 @@ namespace lazy.Views
 
         private T GetObject(int index)
         {
-            return (FlattenKey(this._source)[index]);
+            List<T> flatten = FlattenKey(this._source);
+            if (flatten.Count <= index)
+                return(default(T));
+            return (flatten[index]);
         }
 
         public override bool ProcessKey(KeyEvent kb)
