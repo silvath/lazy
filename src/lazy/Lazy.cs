@@ -200,7 +200,7 @@ namespace lazy
             GitService.Pull(this.Solution);
             GitService.Push(this.Solution);
             GitService.UpdateStatus(this.Solution, true);
-            if (EnsureHasNoChanges())
+            if (!EnsureHasNoChanges())
             {
                 WindowManager.CloseLog();
                 return;
