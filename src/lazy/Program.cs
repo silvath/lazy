@@ -38,6 +38,7 @@ namespace lazy
                 new MenuBarItem ("_VSTS", new MenuItem [] {
                     new MenuItem ("_Tasks", "", () => { _lazy.ShowWorkItems(); }),
                     new MenuItem ("_Create Branch", "", () => { _lazy.CreateBranch(); }),
+                    new MenuItem ("_Sync Branch", "", () => { _lazy.SyncBranch(); }),
                     new MenuItem ("_Create Pull Request", "", () => { _lazy.CreatePullRequest(); }),
                     new MenuItem ("_Add Reviewer to Pull Request", "", () => { _lazy.AddReviewerToPullRequest(); }),
                 }),

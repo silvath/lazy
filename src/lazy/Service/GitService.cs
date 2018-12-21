@@ -151,6 +151,18 @@ namespace lazy.Service
             ProcessService.Execute("git", string.Format(@"push --set-upstream origin {0}", branch), repository.Path);
         }
 
+        public static void MergeBranch(SolutionVO solution, string branchBase, bool onlySelected = true)
+        {
+            foreach (RepositoryVO repository in solution.Repositories)
+                if ((!onlySelected) || (repository.Selected))
+                    MergeBranch(repository, branchBase);
+        }
+
+        public static void MergeBranch(RepositoryVO repository, string branchBase)
+        {
+            ProcessService.Execute("git", string.Format(@"merge {0}", branchBase), repository.Path);
+        }
+
         public static List<string> ListBranchs(RepositoryVO repository)
         {
             List<string> branchs = new List<string>();

@@ -184,6 +184,27 @@ namespace lazy
             this.RefreshUI();
         }
 
+        public void SyncBranch()
+        {
+            if (this.Solution == null)
+                return;
+            if (this.WorkItem == null)
+            {
+                MessageBox.ErrorQuery(50, 7, "VSTS", "You must select a work item first", "Ok");
+                return;
+            }
+            if (!EnsureHasNoChanges())
+                return;
+            WindowManager.ShowLog();
+            GitService.CheckoutBranch(this.Solution, this.BranchBase);
+            GitService.Pull(this.Solution);
+            GitService.CheckoutBranch(this.Solution, this.WorkItem.TaskID);
+            GitService.MergeBranch(this.Solution, this.BranchBase);
+            GitService.UpdateStatus(this.Solution, true);
+            WindowManager.CloseLog();
+            this.RefreshUI();
+        }
+
         public void CreatePullRequest()
         {
             if (this.Solution == null)
