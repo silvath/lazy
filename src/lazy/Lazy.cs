@@ -196,8 +196,10 @@ namespace lazy
             if (!EnsureHasNoChanges())
                 return;
             WindowManager.ShowLog();
+            GitService.UpdateStatus(this.Solution, true);
             GitService.CheckoutBranch(this.Solution, this.BranchBase);
             GitService.Pull(this.Solution);
+            GitService.UpdateStatus(this.Solution, true);
             GitService.CheckoutBranch(this.Solution, this.WorkItem.TaskID);
             GitService.MergeBranch(this.Solution, this.BranchBase);
             GitService.UpdateStatus(this.Solution, true);
