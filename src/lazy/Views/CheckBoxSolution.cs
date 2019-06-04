@@ -30,6 +30,12 @@ namespace lazy.Views
                 this._lazy.OpenCodeSolution(this.Text.ToString());
                 return (true);
             }
+            else if (kb.Key == Key.ControlI)
+            {
+                this._lazy.OpenSolution(this.Text.ToString());
+                return (true);
+            }
+
             return base.ProcessKey(kb);
         }
     }

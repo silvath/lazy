@@ -72,6 +72,7 @@ namespace lazy
         {
             List<string> list = new List<string>();
             list.Add("h - help solution");
+            list.Add("i - open solution");
             list.Add("o - open solution folder");
             list.Add("p - open code in folder");
             ShowDialogList("Help Solution", list);

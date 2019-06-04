@@ -325,6 +325,12 @@ namespace lazy
             this.RefreshUI();
         }
 
+        public void OpenSolution(string solutionName)
+        {
+            string path = this.Solution.Path;
+            ProcessService.OpenSolution(path);
+        }
+
         public void OpenCommandSolution(string repositoryName)
         {
             string path = Directory.GetParent(this.Solution.Path).FullName;

@@ -1,14 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Text;
 
 namespace lazy.Service
 {
     public class ProcessService
     {
+        private static string _vsPath;//@"C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\IDE\devenv.exe";
         private static string _codePath;
-        public static bool IsConfigurated()
+        public static bool IsConfiguratedVisualStudio()
+        {
+            if (_vsPath == null)
+            {
+                List<string> visualStudios = ListVisuaStudios();
+                if (visualStudios.Count == 0)
+                    return (false);
+                _vsPath = visualStudios[0];
+            }
+            return (!string.IsNullOrEmpty(_vsPath));
+        }
+        public static bool IsConfiguratedCode()
         {
             if (_codePath == null)
             {
@@ -47,9 +60,21 @@ namespace lazy.Service
             process.Start();
         }
 
+        public static void OpenSolution(string solutionPath)
+        {
+            if (!IsConfiguratedVisualStudio())
+                return;
+            Process process = new Process();
+            process.StartInfo.FileName = _vsPath;
+            process.StartInfo.Arguments = solutionPath;
+            process.StartInfo.UseShellExecute = false;
+            process.StartInfo.CreateNoWindow = false;
+            process.Start();
+        }
+
         public static void OpenCode(string workingDirectory)
         {
-            if (!IsConfigurated())
+            if (!IsConfiguratedCode())
                 return;
             string command = _codePath;
             string arguments = ".";
@@ -61,6 +86,34 @@ namespace lazy.Service
             Process process = new Process();
             process.StartInfo = startInfo;
             process.Start();
+        }
+
+        public static List<string> ListVisuaStudios()
+        {
+            List<string> visualStudios = new List<string>();
+            string path = @"C:\Program Files (x86)\Microsoft Visual Studio";
+            string[] visualStudioPaths = Directory.GetDirectories(path);
+            int? versionMajor = null;
+            string pathMajor = null;
+            foreach (string visualStudioPath in visualStudioPaths)
+            {
+                DirectoryInfo directory = new DirectoryInfo(visualStudioPath);
+                if (!Int32.TryParse(directory.Name, out int version))
+                    continue;
+                if ((versionMajor.HasValue) && (versionMajor.Value > version))
+                    continue;
+                versionMajor = version;
+                pathMajor = visualStudioPath;
+            }
+            if (pathMajor == null)
+                return (visualStudios);
+            foreach (string edition in Directory.GetDirectories(pathMajor))
+            {
+                string pathVS = $@"{edition}\Common7\IDE\devenv.exe";
+                if (File.Exists(pathVS))
+                    visualStudios.Add(pathVS);
+            }
+            return (visualStudios);
         }
 
         public static string Execute(string command, string arguments = null, string workingDirectory = null)
